@@ -23,7 +23,7 @@ func InitialMigration() {
 	}
 	defer db.Close()
 
-	db.AutoMigrate(&Author{}, &Post{})
+	db.AutoMigrate(&Author{}, &Post{}, &Comment{})
 
 }
 
@@ -32,6 +32,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/post/{user}", Posts).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/author/{user}", AuthorMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/comment/{post}", CommentMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.Use(mux.CORSMethodMiddleware(r))
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
