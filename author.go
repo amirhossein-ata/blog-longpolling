@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -56,8 +58,17 @@ func AuthorMethods(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
 		var authors []Author
-		var := Vars.
-		db.Find(&authors, )
+		vars := mux.Vars(r)
+		user, err := strconv.Atoi(vars["user"])
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode("id not entered corectly")
+		}
+		db.Find(&authors, user)
+		if len(authors) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode("User not found")
+		}
 		json.NewEncoder(w).Encode(authors)
 	}
 
