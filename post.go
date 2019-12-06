@@ -69,5 +69,37 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(post)
 
 	}
+	if r.Method == http.MethodPatch {
+
+		vars := mux.Vars(r)
+		var posts []Post
+		post, err := strconv.Atoi(vars["user"])
+		fmt.Println(post)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode("id not entered corectly")
+
+			return
+
+		}
+		db.Find(&posts, post)
+		if len(posts) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode("post not found")
+
+			return
+		}
+		var p Post
+		db.Where("id = ?", post).Find(&p)
+
+		Body, _ := ioutil.ReadAll(r.Body)
+		var p1 Post
+		json.Unmarshal(Body, &p1)
+
+		p.Text = p1.Text
+		db.Save(&p)
+		db.Where("id = ?", post).Find(&p)
+		json.NewEncoder(w).Encode(p)
+	}
 
 }

@@ -30,7 +30,7 @@ func InitialMigration() {
 func main() {
 	InitialMigration()
 	r := mux.NewRouter()
-	r.HandleFunc("/post/{user}", Posts).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/post/{user}", Posts).Methods(http.MethodGet, http.MethodPost, http.MethodOptions, http.MethodPatch)
 	r.HandleFunc("/author/{user}", AuthorMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/comment/{post}", CommentMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/like/{post}", Like).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
