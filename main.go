@@ -8,6 +8,7 @@ import (
 	// "math/rand"
 	// "strconv"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/jcuga/golongpoll"
 	"github.com/jinzhu/gorm"
@@ -38,6 +39,9 @@ func main() {
 	}
 	go Longpoll(manager)
 	InitialMigration()
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
+	origins := handlers.AllowedOrigins([]string{"*"})
 	r := mux.NewRouter()
 	r.HandleFunc("/post/{user}", Posts).Methods(http.MethodGet, http.MethodPost, http.MethodOptions, http.MethodPatch)
 	r.HandleFunc("/author/{user}", AuthorMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
@@ -46,5 +50,5 @@ func main() {
 	r.HandleFunc("/longpoll", manager.SubscriptionHandler)
 	// r.Use(mux.CORSMethodMiddleware(r))
 	handler := cors.Default().Handler(r)
-	log.Fatal(http.ListenAndServe(":8000", handler))
+	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(origins, headers, methods)(handler)))
 }
