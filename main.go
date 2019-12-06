@@ -16,6 +16,15 @@ import (
 	"github.com/rs/cors"
 )
 
+func addCorsHeaders(fn http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		fn(w, r)
+	}
+}
+
 func InitialMigration() {
 
 	db, err := gorm.Open("sqlite3", "blog.db")
@@ -47,7 +56,7 @@ func main() {
 	r.HandleFunc("/author/{user}", AuthorMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/comment/{post}", CommentMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/like/{post}", Like).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/longpoll", manager.SubscriptionHandler)
+	r.HandleFunc("/longpoll", addCorsHeaders(manager.SubscriptionHandler))
 	// r.Use(mux.CORSMethodMiddleware(r))
 	handler := cors.Default().Handler(r)
 	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(origins, headers, methods)(handler)))
