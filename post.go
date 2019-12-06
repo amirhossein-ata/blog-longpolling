@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/jcuga/golongpoll"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -102,6 +103,31 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		db.Save(&p)
 		db.Where("id = ?", post).Find(&p)
 		json.NewEncoder(w).Encode(p)
+	}
+
+}
+
+func Longpoll(lpManager *golongpoll.LongpollManager) {
+	db, err := gorm.Open("sqlite3", "blog.db")
+	if err != nil {
+		fmt.Println(err.Error())
+		panic("failed to connnect to database")
+
+	}
+	defer db.Close()
+
+	var posts []Post
+	var post Post
+	db.Find(&posts)
+	postLen := len(posts)
+	for {
+		pLen := len(posts)
+		if pLen == postLen {
+			continue
+		}
+		postLen = pLen
+		db.Last(&post)
+		lpManager.Publish("Last post", post)
 	}
 
 }
