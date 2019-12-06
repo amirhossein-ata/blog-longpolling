@@ -16,7 +16,7 @@ import (
 type Author struct {
 	gorm.Model
 	Name  string
-	id    int
+	id    int    `gorm:"AUTO_INCREMENT"`
 	Posts []Post `gorm:"foreignkey:AuthorID"`
 }
 

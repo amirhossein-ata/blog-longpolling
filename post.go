@@ -16,7 +16,8 @@ import (
 //Post Model
 type Post struct {
 	gorm.Model
-	PostID   uint
+	PostID   uint `gorm:"AUTO_INCREMENT"`
+	Title    string
 	Text     string
 	Likes    uint
 	AuthorID uint

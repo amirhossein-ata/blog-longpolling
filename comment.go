@@ -14,7 +14,7 @@ import (
 
 //Comment model
 type Comment struct {
-	CommentID int
+	CommentID int `gorm:"AUTO_INCREMENT"`
 	Text      string
 	PostID    uint
 }
