@@ -53,9 +53,11 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			json.NewEncoder(w).Encode("User not found")
 
+			return
 		}
 		var posts []Post
-		db.Find(&posts, user)
+		db.Where("author_id = ?", user).Find(&posts)
+
 		json.NewEncoder(w).Encode(posts)
 
 		return
