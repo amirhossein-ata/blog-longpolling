@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jcuga/golongpoll"
@@ -124,12 +126,21 @@ func Longpoll(lpManager *golongpoll.LongpollManager) {
 	for {
 		db.Find(&posts)
 		pLen := len(posts)
+
 		if pLen == postLen {
+
 			continue
 		}
+
 		postLen = pLen
-		db.Last(&post)
-		lpManager.Publish("Last post", post)
+		time.Sleep(time.Duration(rand.Intn(5000)) * time.Millisecond)
+		db.Order("ID desc").Find(&posts)
+		// db.Last(&post)
+		fmt.Println(posts[1])
+		if post.ID != 0 {
+			lpManager.Publish("Last post", posts[1])
+		}
+		continue
 	}
 
 }
