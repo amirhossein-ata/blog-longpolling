@@ -39,18 +39,19 @@ func AuthorMethods(w http.ResponseWriter, r *http.Request) {
 		// var author Author
 		// _ = json.NewDecoder(r.Body).Decode(author)
 		Body, _ := ioutil.ReadAll(r.Body)
+		var authors []Author
 		var author Author
 		json.Unmarshal(Body, &author)
-		er := db.NewRecord(author)
-		if er == false {
-			w.WriteHeader(http.StatusConflict)
-			json.NewEncoder(w).Encode("There is an author with that ID")
+		fmt.Println(author.ID)
+		db.Find(&authors, author.ID)
+		if len(authors) != 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode("User already created")
 
 			return
-
 		}
-		db.Create(author)
-		fmt.Println(author)
+
+		db.Create(&author)
 
 		json.NewEncoder(w).Encode(author)
 
