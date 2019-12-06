@@ -22,6 +22,7 @@ type Author struct {
 
 //AuthorMethods - Author related methods
 func AuthorMethods(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "aplication/json")
 	db, err := gorm.Open("sqlite3", "blog.db")
