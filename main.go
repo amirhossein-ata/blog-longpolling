@@ -9,6 +9,7 @@ import (
 	// "strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/jcuga/golongpoll"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -28,12 +29,20 @@ func InitialMigration() {
 }
 
 func main() {
+	manager, err := golongpoll.StartLongpoll(golongpoll.Options{
+		LoggingEnabled: true,
+	})
+	if err != nil {
+		log.Fatalf("Failed to create manager: %q", err)
+	}
+	go Longpoll(manager)
 	InitialMigration()
 	r := mux.NewRouter()
 	r.HandleFunc("/post/{user}", Posts).Methods(http.MethodGet, http.MethodPost, http.MethodOptions, http.MethodPatch)
 	r.HandleFunc("/author/{user}", AuthorMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/comment/{post}", CommentMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/like/{post}", Like).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/longpoll", manager.SubscriptionHandler)
 	r.Use(mux.CORSMethodMiddleware(r))
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
