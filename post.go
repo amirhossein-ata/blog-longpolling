@@ -122,6 +122,7 @@ func Longpoll(lpManager *golongpoll.LongpollManager) {
 	db.Find(&posts)
 	postLen := len(posts)
 	for {
+		db.Find(&posts)
 		pLen := len(posts)
 		if pLen == postLen {
 			continue

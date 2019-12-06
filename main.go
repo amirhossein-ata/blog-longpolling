@@ -12,6 +12,7 @@ import (
 	"github.com/jcuga/golongpoll"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/rs/cors"
 )
 
 func InitialMigration() {
@@ -43,6 +44,7 @@ func main() {
 	r.HandleFunc("/comment/{post}", CommentMethods).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/like/{post}", Like).Methods(http.MethodGet, http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/longpoll", manager.SubscriptionHandler)
-	r.Use(mux.CORSMethodMiddleware(r))
-	log.Fatal(http.ListenAndServe(":8000", r))
+	// r.Use(mux.CORSMethodMiddleware(r))
+	handler := cors.Default().Handler(r)
+	log.Fatal(http.ListenAndServe(":8000", handler))
 }
