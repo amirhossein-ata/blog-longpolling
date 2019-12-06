@@ -14,9 +14,8 @@ import (
 
 //Comment model
 type Comment struct {
-	CommentID int `gorm:"AUTO_INCREMENT"`
-	Text      string
-	PostID    uint
+	Text   string
+	PostID uint
 }
 
 //CommentMethods - Comment related methods
@@ -65,7 +64,7 @@ func CommentMethods(w http.ResponseWriter, r *http.Request) {
 		var comment Comment
 		json.Unmarshal(Body, &comment)
 
-		db.Create(comment)
+		db.Create(&comment)
 		json.NewEncoder(w).Encode(comment)
 
 	}

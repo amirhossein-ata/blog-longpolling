@@ -16,12 +16,11 @@ import (
 //Post Model
 type Post struct {
 	gorm.Model
-	PostID   uint `gorm:"AUTO_INCREMENT"`
 	Title    string
 	Text     string
 	Likes    uint
-	AuthorID uint
-	Comments []Comment `gorm:"foreignkey:PostID"`
+	AuthorID int
+	Comments []Comment `gorm:"foreignkey:postID"`
 }
 
 //Posts - post related operations
@@ -67,8 +66,8 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		Body, _ := ioutil.ReadAll(r.Body)
 		var post Post
 		json.Unmarshal(Body, &post)
-
-		db.Create(post)
+		fmt.Println(post)
+		db.Create(&post)
 		json.NewEncoder(w).Encode(post)
 
 	}
